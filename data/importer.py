@@ -1,10 +1,27 @@
+import os
+import requests
 import pandas as pd
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
+
 from activity.stroke_style import Stroke
 
-date_frame = pd.read_csv("./resources/activities.csv")
-root: ET.Element = ET.parse("./resources/export.xml").getroot()
+ACTIVITIES_LOCAL_LOC = "./resources/activities.csv"
+HEALTH_DATA_LOCAL_LOC = "./resources/export.xml"
+
+ACTIVITIES_REMOTE_LOC = "https://srv-file20.gofile.io/download/ew7ZMy/activities.csv"
+HEALTH_DATA_REMOTE_LOC = "https://srv-file20.gofile.io/download/3b6IHs/export.xml"
+
+if not os.path.isfile(ACTIVITIES_LOCAL_LOC):
+    date_frame = pd.read_csv(ACTIVITIES_REMOTE_LOC)
+else:
+    date_frame = pd.read_csv(ACTIVITIES_LOCAL_LOC)
+
+if not os.path.isfile(HEALTH_DATA_LOCAL_LOC):
+    response = requests.get(HEALTH_DATA_REMOTE_LOC)
+    root: ET.Element = ET.ElementTree(ET.fromstring(response.content)).getroot()
+else:
+    root: ET.Element = ET.parse(HEALTH_DATA_LOCAL_LOC).getroot()
 
 WORKOUT = "Workout"
 WORKOUT_EVENT = "WorkoutEvent"

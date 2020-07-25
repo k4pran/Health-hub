@@ -59,5 +59,5 @@ config.update_blueprint({
 
 # Serve the newly configured web application.
 print("Health hub serving on port 8080...")
-httpd = make_server('', 8080, config.make_wsgi_app())
+httpd = make_server('', 5000, config.make_wsgi_app())
 httpd.serve_forever()
