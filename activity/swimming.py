@@ -1,13 +1,15 @@
 from data.importer import get_swim_activities, get_swim_stroke_counts, get_swim_laps
 
-df_activities = get_swim_activities()
+swimming_df = get_swim_activities()
+swimming_laps_df = get_swim_laps()
+swimming_stroke_counts = get_swim_stroke_counts()
 
 
 def get_distances():
     """
     :return: swim distances in meters
     """
-    return df_activities['distance'].apply(lambda d: d * 1000)
+    return swimming_df['distance'].apply(lambda d: d * 1000)
 
 
 def get_total_distance():
@@ -25,8 +27,4 @@ def get_mean_distance():
 
 
 def get_minutes_per_100m():
-    return (df_activities['duration'] / get_distances()) * 100
-
-
-if __name__ == "__main__":
-    print()
+    return (swimming_df['duration'] / get_distances()) * 100

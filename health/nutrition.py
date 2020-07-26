@@ -2,6 +2,7 @@ import data.importer as imp
 import data.plotter as plotter
 
 activity_summaries_df = imp.gather_activity_summaries()
+calories_burned = imp.get_calories_burned()
 
 
 def get_total_calories():

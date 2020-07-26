@@ -1,10 +1,20 @@
 from wsgiref.simple_server import make_server
-import tg
-from tg import MinimalApplicationConfigurator
-from tg import expose, TGController
+from tg import MinimalApplicationConfigurator, expose, TGController, response, request
 import pandas as pd
 import database
 import pickle
+
+from function_registrar import selectable
+
+HOST = "localhost"
+PORT = 5000
+
+available_formats = {
+    'json': 'application/json',
+    'csv': 'text/csv',
+    'html': 'text/html',
+    'pickled pandas dataframe': 'application/octet-stream'
+}
 
 
 def resolve_requested_format(df: pd.DataFrame, accept_types):
@@ -25,19 +35,83 @@ class RootController(TGController):
     def index(self):
         return 'data'
 
-    @expose(content_type="text/plain")
-    def page(self):
-        return 'page'
-
+    @selectable("Fetch all from heart table")
     @expose()
     def heart(self):
-        accept_types = [i for i in tg.request.accept]
-        tg.response.content_type, content = resolve_requested_format(database.querier.heart_data(), accept_types)
+        accept_types = [i for i in request.accept]
+        response.content_type, content = resolve_requested_format(database.querier.heart_data(), accept_types)
         return content
 
-    @expose(content_type="text/plain")
+    @selectable("Fetch all from activity summaries table")
+    @expose()
+    def activity_summaries(self):
+        accept_types = [i for i in request.accept]
+        response.content_type, content = resolve_requested_format(database.querier.activity_summaries(), accept_types)
+        return content
+
+    @selectable("Fetch all from swimming table")
+    @expose()
+    def swimming(self):
+        accept_types = [i for i in request.accept]
+        response.content_type, content = resolve_requested_format(database.querier.swimming(), accept_types)
+        return content
+
+    @selectable("Fetch all from calorie table")
+    @expose()
+    def calories(self):
+        accept_types = [i for i in request.accept]
+        response.content_type, content = resolve_requested_format(database.querier.calories(), accept_types)
+        return content
+
+    @selectable("Fetch all from swimming laps table")
+    @expose()
+    def swimming_laps(self):
+        accept_types = [i for i in request.accept]
+        response.content_type, content = resolve_requested_format(database.querier.swimming_laps(), accept_types)
+        return content
+
+    @selectable("Fetch all from swimming strokes table")
+    @expose()
+    def swimming_strokes(self):
+        accept_types = [i for i in request.accept]
+        response.content_type, content = resolve_requested_format(database.querier.swimming_strokes(), accept_types)
+        return content
+
+    @selectable("Fetch all environmental audio exposure table")
+    @expose()
+    def env_audio_exposure(self):
+        accept_types = [i for i in request.accept]
+        response.content_type, content = resolve_requested_format(database.querier.env_audio_exposure(), accept_types)
+        return content
+
+    @selectable("Fetch all from phones audio exposure table")
+    @expose()
+    def phones_audio_exposure(self):
+        accept_types = [i for i in request.accept]
+        response.content_type, content = resolve_requested_format(database.querier.phones_audio_exposure(),
+                                                                  accept_types)
+        return content
+
+    @expose("json", content_type="application/json")
     def refresh(self):
-        database.update_all()
+        return database.update_all()
+
+    @expose("json", content_type="application/json")
+    def endpoints(self):
+        result = dict()
+        for endpoint_name in selectable.all:
+            endpoint_details = selectable.all[endpoint_name]
+            result[endpoint_name] = {
+                'name': endpoint_name,
+                'endpoint': "{}:{}/{}".format(HOST, str(PORT), endpoint_name),
+                'description': endpoint_details['description']
+            }
+        return result
+
+    @expose("json", content_type="application/json")
+    def formats(self):
+        return available_formats
+
 
 # Configure a new minimal application with our root controller.
 config = MinimalApplicationConfigurator()
@@ -46,6 +120,6 @@ config.update_blueprint({
 })
 
 # Serve the newly configured web application.
-print("Health hub serving on port 5000...")
-httpd = make_server('', 5000, config.make_wsgi_app())
+print("Health hub serving on port {}...".format(str(PORT)))
+httpd = make_server('', PORT, config.make_wsgi_app())
 httpd.serve_forever()

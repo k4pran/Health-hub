@@ -4,7 +4,7 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 
-from activity.stroke_style import Stroke
+from data.stroke_style import Stroke
 
 ACTIVITIES_LOCAL_LOC = "./resources/activities.csv"
 HEALTH_DATA_LOCAL_LOC = "./resources/export.xml"
@@ -59,7 +59,7 @@ def find_records():
     return root.findall(RECORD)
 
 
-def find_activity_Summaries():
+def find_activity_summaries():
     return root.findall(ACTIVITY_SUMMARY)
 
 
@@ -115,7 +115,7 @@ def get_swim_laps() -> pd.DataFrame:
 
 def gather_activity_summaries() -> pd.DataFrame:
     summaries = []
-    for summary in find_activity_Summaries():
+    for summary in find_activity_summaries():
         activity_row = dict()
         summary_attributes = summary.attrib
         activity_row['date'] = datetime.strptime(summary_attributes[DATE_COMPONENT_KEY], DATE_FORMAT)
@@ -157,7 +157,7 @@ def get_swim_stroke_counts() -> pd.DataFrame:
             stroke_row['end_time'] = datetime.strptime(record.attrib[RECORD_END_DATE].split(" +")[0], DATE_TIME_FORMAT) + timedelta(hours=1)
             stroke_row['lengths'] = record.attrib['value']
             for stroke_data in record.findall(META_DATA_ENTRY):
-                stroke_row['style'] = Stroke(int(stroke_data.attrib['value']))
+                stroke_row['style'] = Stroke(int(stroke_data.attrib['value'])).name
                 strokes.append(stroke_row)
 
     return pd.DataFrame(strokes)
