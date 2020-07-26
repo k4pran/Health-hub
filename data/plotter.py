@@ -7,6 +7,7 @@ sns.set()
 
 days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
 
+
 def plot_scatter(x, y, x_label="", y_label="", title=""):
     sns.scatterplot(x, y)
     sns.set(style="whitegrid")
@@ -25,6 +26,7 @@ def bar_plot_daily(values, values_label="", title=""):
     plt.title(title, pad=14)
     plt.savefig(title + ".jpg")
     plt.show()
+
 
 if __name__ == "__main__":
     speeds = get_minutes_per_100m()

@@ -45,19 +45,7 @@ config.update_blueprint({
     'root_controller': RootController()
 })
 
-# config.register(SQLAlchemyConfigurationComponent)
-# config.update_blueprint({
-#     'use_sqlalchemy': True,
-#     'sqlalchemy.url': 'sqlite:///devdata.db'
-# })
-
-
-# config.update_blueprint({'model': Bunch(
-#     DBSession=DBSession,
-#     init_model=init_model
-# )})
-
 # Serve the newly configured web application.
-print("Health hub serving on port 8080...")
+print("Health hub serving on port 5000...")
 httpd = make_server('', 5000, config.make_wsgi_app())
 httpd.serve_forever()
