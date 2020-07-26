@@ -6,7 +6,7 @@ import pickle
 
 from function_registrar import selectable
 
-HOST = "localhost"
+HOST = "0.0.0.0"
 PORT = 5000
 
 available_formats = {

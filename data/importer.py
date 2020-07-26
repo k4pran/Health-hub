@@ -13,11 +13,13 @@ ACTIVITIES_REMOTE_LOC = "https://srv-file20.gofile.io/download/ew7ZMy/activities
 HEALTH_DATA_REMOTE_LOC = "https://srv-file20.gofile.io/download/3b6IHs/export.xml"
 
 if not os.path.isfile(ACTIVITIES_LOCAL_LOC):
+    print("No local activities.csv found, fetching remote backup")
     date_frame = pd.read_csv(ACTIVITIES_REMOTE_LOC)
 else:
     date_frame = pd.read_csv(ACTIVITIES_LOCAL_LOC)
 
 if not os.path.isfile(HEALTH_DATA_LOCAL_LOC):
+    print("No local export.xml found, fetching remote backup")
     response = requests.get(HEALTH_DATA_REMOTE_LOC)
     root: ET.Element = ET.ElementTree(ET.fromstring(response.content)).getroot()
 else:
